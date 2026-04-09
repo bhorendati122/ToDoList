@@ -1,64 +1,227 @@
+```html
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FotoFoto - Strona główna</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>Lista zadań</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #eef2f7;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 500px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+h1 {
+    text-align: center;
+}
+
+input, select, button {
+    padding: 10px;
+    margin: 5px 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+button {
+    background: #4CAF50;
+    color: white;
+    border: none;
+}
+
+button:hover {
+    background: #45a049;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    background: #f9f9f9;
+    margin: 5px 0;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    border-radius: 5px;
+}
+
+.done {
+    text-decoration: line-through;
+    color: gray;
+}
+
+.buttons button {
+    width: auto;
+    margin-left: 5px;
+    background: #ddd;
+    color: black;
+}
+
+.buttons button:hover {
+    background: #bbb;
+}
+</style>
 </head>
+
 <body>
 
-    <header class="header">
-        <div class="container">
-            <a href="index.html" class="logo">Foto<span class="logo-part">Foto</span></a>
-            <nav class="navigation">
-                <ul>
-                    <li><a href="index.html" class="active">O firmie</a></li>
-                    <li><a href="oferta.html">Oferta</a></li>
-                    <li><a href="portfolio.html">Portfolio</a></li>
-                    <li><a href="kontakt.html">Kontakt</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+<div class="container">
+    <h1>Lista zadań</h1>
 
-    <main>
-        <section class="hero">
-            <div class="container">
-                <h1>Uchwyć z nami swoje najlepsze chwile</h1>
-                <p>Jesteśmy małym studiem fotograficznym z Piotrkowa Trybunalskiego z wielką pasją. Specjalizujemy się w fotografii portretowej i okolicznościowej.</p>
-                <a href="portfolio.html" class="btn">Zobacz nasze prace</a>
-            </div>
-        </section>
+    <input id="taskInput" placeholder="Wpisz zadanie">
+    <button id="addBtn">Dodaj</button>
 
-        <section class="about-us container">
-            <h2>Dlaczego my?</h2>
-            <div class="features">
-                <div class="feature-item">
-                    <h3>Doświadczenie</h3>
-                    <p>Mamy za sobą setki udanych sesji i zadowolonych klientów.</p>
-                </div>
-                <div class="feature-item">
-                    <h3>Kreatywność</h3>
-                    <p>Do każdego zlecenia podchodzimy indywidualnie i z nowymi pomysłami.</p>
-                </div>
-                <div class="feature-item">
-                    <h3>Sprzęt</h3>
-                    <p>Pracujemy na profesjonalnym sprzęcie, co gwarantuje najwyższą jakość zdjęć.</p>
-                </div>
-            </div>
-        </section>
-    </main>
+    <select id="filter">
+        <option value="all">Wszystkie</option>
+        <option value="active">Aktywne</option>
+        <option value="done">Zakończone</option>
+    </select>
 
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2025 FotoFoto</p>
-            <p>Projekt strony: Bartosz Horenda 4ti1</p>
-        </div>
-    </footer>
+    <ul id="taskList"></ul>
+</div>
+
+<script>
+// TABLICA NA ZADANIA
+let tasks = [];
+
+// POBIERANIE ELEMENTÓW
+let input = document.getElementById("taskInput");
+let addBtn = document.getElementById("addBtn");
+let list = document.getElementById("taskList");
+let filter = document.getElementById("filter");
+
+// EVENTY
+addBtn.addEventListener("click", addTask);
+filter.addEventListener("change", showTasks);
+
+// DODAWANIE ZADANIA
+function addTask() {
+    let text = input.value;
+
+    if (text === "") return;
+
+    let task = {
+        id: Date.now(),
+        text: text,
+        done: false
+    };
+
+    tasks.push(task);
+
+    saveData();
+    showTasks();
+
+    input.value = "";
+}
+
+// WYŚWIETLANIE
+function showTasks() {
+    list.innerHTML = "";
+
+    let filtered = tasks;
+
+    if (filter.value === "active") {
+        filtered = tasks.filter(function(t) {
+            return t.done === false;
+        });
+    }
+
+    if (filter.value === "done") {
+        filtered = tasks.filter(function(t) {
+            return t.done === true;
+        });
+    }
+
+    filtered.forEach(function(task) {
+        let li = document.createElement("li");
+
+        if (task.done === true) {
+            li.classList.add("done");
+        }
+
+        let span = document.createElement("span");
+        span.textContent = task.text;
+
+        // klik = zakończ
+        span.addEventListener("click", function() {
+            toggleTask(task.id);
+        });
+
+        let btns = document.createElement("div");
+        btns.className = "buttons";
+
+        let doneBtn = document.createElement("button");
+        doneBtn.textContent = "✔";
+        doneBtn.addEventListener("click", function() {
+            toggleTask(task.id);
+        });
+
+        let deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "X";
+        deleteBtn.addEventListener("click", function() {
+            deleteTask(task.id);
+        });
+
+        btns.appendChild(doneBtn);
+        btns.appendChild(deleteBtn);
+
+        li.appendChild(span);
+        li.appendChild(btns);
+
+        list.appendChild(li);
+    });
+}
+
+// ZMIANA STATUSU
+function toggleTask(id) {
+    tasks.forEach(function(t) {
+        if (t.id === id) {
+            t.done = !t.done;
+        }
+    });
+
+    saveData();
+    showTasks();
+}
+
+// USUWANIE
+function deleteTask(id) {
+    tasks = tasks.filter(function(t) {
+        return t.id !== id;
+    });
+
+    saveData();
+    showTasks();
+}
+
+// LOCAL STORAGE
+function saveData() {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
+function loadData() {
+    let data = localStorage.getItem("tasks");
+    if (data) {
+        tasks = JSON.parse(data);
+    }
+}
+
+// START
+loadData();
+showTasks();
+</script>
 
 </body>
 </html>
+```

@@ -1,6 +1,5 @@
-```html
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>Lista zadań</title>
@@ -16,7 +15,7 @@ body {
 .container {
     max-width: 500px;
     margin: auto;
-    background: white;
+    background: #98D6FF;
     padding: 20px;
     border-radius: 10px;
 }
@@ -33,7 +32,7 @@ input, select, button {
 }
 
 button {
-    background: #4CAF50;
+    background: #52BBE0;
     color: white;
     border: none;
 }
@@ -79,7 +78,7 @@ li {
 <div class="container">
     <h1>Lista zadań</h1>
 
-    <input id="taskInput" placeholder="Wpisz zadanie">
+    <input id="taskInput" placeholder="Wpisz zadanie...">
     <button id="addBtn">Dodaj</button>
 
     <select id="filter">
@@ -92,20 +91,16 @@ li {
 </div>
 
 <script>
-// TABLICA NA ZADANIA
 let tasks = [];
 
-// POBIERANIE ELEMENTÓW
 let input = document.getElementById("taskInput");
 let addBtn = document.getElementById("addBtn");
 let list = document.getElementById("taskList");
 let filter = document.getElementById("filter");
 
-// EVENTY
 addBtn.addEventListener("click", addTask);
 filter.addEventListener("change", showTasks);
 
-// DODAWANIE ZADANIA
 function addTask() {
     let text = input.value;
 
@@ -125,7 +120,6 @@ function addTask() {
     input.value = "";
 }
 
-// WYŚWIETLANIE
 function showTasks() {
     list.innerHTML = "";
 
@@ -153,7 +147,6 @@ function showTasks() {
         let span = document.createElement("span");
         span.textContent = task.text;
 
-        // klik = zakończ
         span.addEventListener("click", function() {
             toggleTask(task.id);
         });
@@ -183,7 +176,6 @@ function showTasks() {
     });
 }
 
-// ZMIANA STATUSU
 function toggleTask(id) {
     tasks.forEach(function(t) {
         if (t.id === id) {
@@ -195,7 +187,6 @@ function toggleTask(id) {
     showTasks();
 }
 
-// USUWANIE
 function deleteTask(id) {
     tasks = tasks.filter(function(t) {
         return t.id !== id;
@@ -205,7 +196,6 @@ function deleteTask(id) {
     showTasks();
 }
 
-// LOCAL STORAGE
 function saveData() {
     localStorage.setItem("tasks", JSON.stringify(tasks));
 }
@@ -217,11 +207,9 @@ function loadData() {
     }
 }
 
-// START
 loadData();
 showTasks();
 </script>
 
 </body>
 </html>
-```
